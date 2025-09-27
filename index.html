@@ -2,12 +2,20 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>idV 가상 밴픽 시뮬레이</title>
+<title>idV 가상 밴픽 시뮬레이터</title>
 <style>
 body { font-family: sans-serif; background: #222; color: #eee; margin:0; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; min-height: 100vh;}
 .hidden { display: none; }
 select, button { margin: 10px; padding: 5px; }
-.cards { display: flex; flex-wrap: wrap; justify-content: center; margin-top: 20px; }
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 20px;
+  padding: 0 30px;  
+  box-sizing: border-box; 
+}
+
 .card {
   position: relative;
   width: 100px;
@@ -47,10 +55,30 @@ select, button { margin: 10px; padding: 5px; }
 
 #log { margin-top: 20px; max-height: 250px; overflow-y: auto; width: 90%; text-align: left; border-top: 1px solid #555; padding: 10px; }
 #finishTurnBtn, #nextSetBtn, #endMatchBtn { margin-top: 20px; padding: 15px 30px; font-size: 18px; font-weight: bold; background-color: #0f0; color: #222; border: none; cursor: pointer; transition: 0.2s; }
+
 #finishTurnBtn:disabled, #nextSetBtn:disabled, #endMatchBtn:disabled { background-color: #555; cursor: not-allowed; }
+
 .finalLineupContainer { display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 30px; }
+
 .finalLineup { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 10px; }
+
 #globalOnBtn.selected, #globalOffBtn.selected { background-color: #0f0; color:#222; }
+#customGlobalNextBtn {
+  padding: 20px 40px;
+  font-size: 22px;
+  font-weight: bold;
+  background-color: #0f0;
+  color: #222;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+#customGlobalNextBtn:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+}
+
 </style>
 </head>
 <body>
@@ -102,6 +130,21 @@ select, button { margin: 10px; padding: 5px; }
   <button onclick="chooseRole('hunter')">감시자</button>
 </div>
 
+<!-- 커스텀 글로벌 밴 선택 단계 -->
+<div id="customGlobalBan" class="hidden">
+<h2 id="customGlobalHeader">이전 세트의 글로벌 밴 캐릭터를 지정하세요</h2>
+<div>
+<h3 id="survivorLabel">생존자 : 0개</h3>
+  <div id="customBanSurvivors" class="cards"></div>
+</div>
+  <div>
+  <h3 id="hunterLabel">감시자 : 0개</h3>
+    <div id="customBanHunters" class="cards"></div>
+  </div>
+  <button id="confirmCustomBanBtn" onclick="confirmCustomBan()" disabled>다음</button>
+</div>
+
+  
 <!-- 밴픽 진행 -->
 <div id="draftPhase" class="hidden">
   <h2 id="turnInfo">턴 진행 중...</h2>
@@ -195,9 +238,95 @@ function goRoleSelect(){
 function chooseRole(role){
   playerRole = role;
   document.getElementById("roleSelect").classList.add("hidden");
+
+  if(!globalBan && currentSet > 1){
+    // 글로벌 밴 OFF 모드 + 2세트 이상이면 커스텀 글로벌 밴 단계로 이동
+    startCustomGlobalBan();
+  } else {
+    // 기존처럼 바로 밴픽 시작
+    document.getElementById("draftPhase").classList.remove("hidden");
+    startTurn();
+  }
+}
+
+function updateCustomGlobalLabels() {
+  let survivorCount = (currentSet - 1) * 3;
+  let hunterCount   = (currentSet - 1) * 1;
+
+  document.getElementById("survivorLabel").innerText = `생존자 : ${survivorCount}개`;
+  document.getElementById("hunterLabel").innerText   = `감시자 : ${hunterCount}개`;
+}
+
+
+
+let survivorCount = (currentSet-1)*3;
+let hunterCount = (currentSet-1)*1;
+  
+let customBanTargets = {survivor:0, hunter:0};
+let selectedCustomBan = {survivor:[], hunter:[]};
+
+
+function startCustomGlobalBan(){
+  document.getElementById("customGlobalBan").classList.remove("hidden");
+
+  // 세트별 필요 수량 계산
+  customBanTargets = {
+    survivor: (currentSet - 1) * 3,
+    hunter: (currentSet - 1) * 1
+  };
+
+  selectedCustomBan = {survivor:[], hunter:[]};
+
+  // ⭐ 라벨 업데이트
+  updateCustomGlobalLabels();
+
+  renderCustomBanCards("survivor");
+  renderCustomBanCards("hunter");
+  updateCustomBanButton();
+}
+
+
+function renderCustomBanCards(target){
+  const container = document.getElementById(target==="survivor"?"customBanSurvivors":"customBanHunters");
+  container.innerHTML = "";
+  const pool = target==="survivor"?survivors:hunters;
+
+  pool.forEach(c=>{
+    let div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `<img src="${c.img}"><span>${c.name}</span>`;
+    div.onclick = ()=>{
+      if(selectedCustomBan[target].includes(c.name)){
+        // 선택 해제
+        selectedCustomBan[target] = selectedCustomBan[target].filter(x=>x!==c.name);
+        div.classList.remove("selected");
+      } else {
+        if(selectedCustomBan[target].length >= customBanTargets[target]) return;
+        selectedCustomBan[target].push(c.name);
+        div.classList.add("selected");
+      }
+      updateCustomBanButton();
+    };
+    container.appendChild(div);
+  });
+}
+
+function updateCustomBanButton(){
+  const ok = (selectedCustomBan.survivor.length === customBanTargets.survivor &&
+              selectedCustomBan.hunter.length === customBanTargets.hunter);
+  document.getElementById("confirmCustomBanBtn").disabled = !ok;
+}
+
+function confirmCustomBan(){
+  // 글로벌 밴 처리
+  bannedSurvivors.push(...selectedCustomBan.survivor.filter(c=>!bannedSurvivors.includes(c)));
+  bannedHunters.push(...selectedCustomBan.hunter.filter(c=>!bannedHunters.includes(c)));
+
+  document.getElementById("customGlobalBan").classList.add("hidden");
   document.getElementById("draftPhase").classList.remove("hidden");
   startTurn();
 }
+
 
 function startTurn(){
   clearInterval(timerId);
@@ -440,4 +569,3 @@ function nextSet(){
 </script>
 </body>
 </html>
-
