@@ -82,10 +82,10 @@ select, button {
 
 .card img { width: 90px; height: 90px; object-fit: cover; }
 .card.picked { 
-  border: 4px solid #2670e8; 
-  opacity: 0.8; 
+  border: 4px solid #1bd7fc; 
+  opacity: 1.0; 
   font-weight: bold;    
-  box-shadow: 0 0 10px rgba(62,158,254, 0.5);
+  box-shadow: 0 0 20px rgba(62,158,254, 0.7);
   cursor: not-allowed; 
 }
 .card.selected { border: 3px solid #7dea47; }
@@ -93,15 +93,19 @@ select, button {
 .card.banned::after {
   content: "X";
   position: absolute;
-  top: 5px; left: 5px;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* 중앙 정렬 */
   color: #f55042;
   font-weight: bold;
-  font-size: 40px;
+  font-size: 70px;
+  z-index: 2;
 }
 .card.globalBanned { 
   border: 4px solid #be382c; 
   border-radius: 10px;  
-  opacity: 0.25; 
+  text-decoration: line-through;
+  opacity: 0.2; 
   cursor: not-allowed; 
 }
 
@@ -900,13 +904,5 @@ function nextSet() {
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
 
 
