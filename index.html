@@ -26,8 +26,20 @@ body {
 /* 셀렉트/버튼 기본 스타일 */
 select, button { 
   margin: 10px; 
-  padding: 5px; 
+  padding: 18px; 
+  font-size: 20px;
+  border-radius: 8px;
 }
+
+/* 밴픽 단계 및 커스텀 글로벌 밴 단계 라벨 여백 */
+#draftPhase h2,
+#draftPhase h3,
+#customGlobalBan h2,
+#customGlobalBan h3 {
+  padding-left: 25px;  /* 좌측 여백 */
+  margin-left: 0;      /* 기본 마진 제거, 필요시 조정 */
+}
+
 
 /* 카드 리스트 */
 .cards {
@@ -90,22 +102,42 @@ select, button {
 
 /* 선택된 버튼 강조 */
 button.selected {
-  background-color: #0f0 !important; /* 초록색 */
+  background-color: #69dd6b !important; /* 초록색 */
   color: #222;
 }
 
 /* 진영 선택 후 다음 버튼 */
-#roleNextBtn {
-  padding: 20px 60px;
-  font-size: 22px;
+#roleNextBtn, #globalNextBtn {
+  padding: 20px 50px;
+  font-size: 21px;
   font-weight: bold;
-  background-color: #0f0;
+  background-color: #f2d586;
+  color: #222;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+#hunterRoleBtn, #survivorRoleBtn { 
+  margin: 10px; 
+  padding: 15 12px; 
+  font-size: 20px;
+  border-radius: 8px;
+}
+
+#setgoNextBtn, #mapgoNextBtn {
+  padding: 20px 35px;
+  font-size: 21px;
+  font-weight: bold;
+  background-color: #f2d586;
   color: #222;
   border: none;
   border-radius: 10px;
   cursor: pointer;
   transition: 0.2s;
 }
+
 
 #roleNextBtn:disabled {
   background-color: #555;
@@ -118,7 +150,7 @@ button.selected {
   padding: 15px 30px;
   font-size: 18px;
   font-weight: bold;
-  background-color: #0f0;
+  background-color: #f2d586;
   color: #222;
   border: none;
   cursor: pointer;
@@ -170,7 +202,7 @@ button.selected {
   position: absolute;
   top: 60px;
   right: 30px;
-  color: #0f0;
+  color: #e8e8e8;
   font-size: 18px;
 }
 
@@ -184,7 +216,7 @@ button.selected {
 
 <!-- 글로벌 밴 선택 -->
 <div id="globalBanSelect">
-  <h2>글로벌 밴 사용 여부</h2>
+  <h2>글로벌 밴 규칙 사용 여부</h2>
   <button id="globalOnBtn" onclick="selectGlobalBan(true)">ON</button>
   <button id="globalOffBtn" onclick="selectGlobalBan(false)">OFF</button>
   <br>
@@ -193,7 +225,7 @@ button.selected {
 
 <!-- 세트 선택 -->
 <div id="setSelect" class="hidden">
-  <h2>세트 번호를 선택하세요</h2>
+  <h2>현재 세트를 선택하세요</h2>
   <select id="setNumber">
     <option value="1">1세트</option>
     <option value="2">2세트</option>
@@ -201,28 +233,28 @@ button.selected {
     <option value="4">4세트</option>
     <option value="5">5세트</option>
   </select>
-  <button onclick="goMapSelect()">다음</button>
+  <button id="setgoNextBtn" onclick="goMapSelect()">다음</button>
 </div>
 
 <!-- 맵 선택 -->
 <div id="mapSelect" class="hidden">
   <h2>맵을 선택하세요</h2>
   <select id="mapNumber">
-    <option value="1">맵 1</option>
-    <option value="2">맵 2</option>
-    <option value="3">맵 3</option>
-    <option value="4">맵 4</option>
-    <option value="5">맵 5</option>
-    <option value="6">맵 6</option>
-    <option value="7">맵 7</option>
-    <option value="8">맵 8</option>
+    <option value="1">군수공장</option>
+    <option value="2">붉은성당</option>
+    <option value="3">성심병원</option>
+    <option value="4">호수마을</option>
+    <option value="5">달빛강공원</option>
+    <option value="6">레오의기억</option>
+    <option value="7">에버슬리핑타운</option>
+    <option value="8">차이나타운</option>
   </select>
-  <button onclick="goRoleSelect()">다음</button>
+  <button id="mapgoNextBtn" onclick="goRoleSelect()">다음</button>
 </div>
 
 <!-- 진영 선택 -->
 <div id="roleSelect" class="hidden">
-  <h2>진영을 선택하세요</h2>
+  <h2>본인 진영을 선택하세요</h2>
   <button id="survivorRoleBtn" onclick="chooseRole('survivor')">생존자</button>
   <button id="hunterRoleBtn" onclick="chooseRole('hunter')">감시자</button>
   <br>
@@ -234,11 +266,11 @@ button.selected {
 <div id="customGlobalBan" class="hidden">
 <h2 id="customGlobalHeader">이전 세트의 글로벌 밴 캐릭터를 지정하세요</h2>
 <div>
-<h3 id="survivorLabel">생존자 : 0개</h3>
+<h2 id="survivorLabel">생존자 : 0개</h2>
   <div id="customBanSurvivors" class="cards"></div>
 </div>
   <div>
-  <h3 id="hunterLabel">감시자 : 0개</h3>
+  <h2 id="hunterLabel">감시자 : 0개</h2>
     <div id="customBanHunters" class="cards"></div>
   </div>
   <button id="confirmCustomBanBtn" onclick="confirmCustomBan()" disabled>밴픽 시작</button>
@@ -277,6 +309,7 @@ let timeLeft = 0;
 let selectedThisTurn = [];
 let finalSurvivors = [];
 let finalHunter = null;
+let bannedMaps = []; // 글로벌 밴 ON 상태에서 이전 세트 선택한 맵 기록
 let currentSetPicked = {
   survivor: [],
   hunter: [],
@@ -284,8 +317,24 @@ let currentSetPicked = {
   bannedHunter: []
 };
 
+const mapNames = [
+  null, // index 0은 비워둠 (맵 번호가 1부터 시작)
+  "군수공장",
+  "붉은성당",
+  "성심병원",
+  "호수마을",
+  "달빛강공원",
+  "레오의기억",
+  "에버슬리핑타운",
+  "차이나타운"
+];
+
 // 샘플 캐릭터
-let survivors = Array.from({length: 50}, (_, i) => ({name: `생존자${i+1}`, img: "https://via.placeholder.com/70"}));
+let survivors = [
+  { name: "의사", img: "images/s (1).png" }
+];
+
+
 let hunters   = Array.from({length: 33}, (_, i) => ({name: `감시자${i+1}`, img: "https://via.placeholder.com/70"}));
 
 // 세트별 밴픽 순서 (1세트 예시)
@@ -331,6 +380,12 @@ function goMapSelect(){
   currentSet = parseInt(document.getElementById("setNumber").value);
   document.getElementById("setSelect").classList.add("hidden");
   document.getElementById("mapSelect").classList.remove("hidden");
+
+  // 글로벌 밴 ON이면 이전에 선택된 맵 제외
+  const mapSelect = document.getElementById("mapNumber");
+  Array.from(mapSelect.options).forEach(opt => {
+    opt.disabled = (globalBan && bannedMaps.includes(parseInt(opt.value)));
+  });
 
   updateSetMapInfo(); // 표시 업데이트
 }
@@ -457,8 +512,8 @@ function renderCustomBanCards(target){
 
 function updateSetMapInfo() {
   const infoDiv = document.getElementById("setMapInfo");
-  if(currentSet && currentMap){
-    infoDiv.innerText = `세트: ${currentSet} | 맵: ${currentMap}`;
+  if (currentSet && currentMap) {
+    infoDiv.innerText = `세트: ${currentSet} | 맵: ${mapNames[currentMap]}`;
   } else {
     infoDiv.innerText = "";
   }
@@ -730,6 +785,9 @@ function nextSet() {
   if(globalBan) customBanDone = true; // 글로벌밴 on → 1세트 이후 커스텀 밴 절대 호출 안함
   else customBanDone = false;         // 글로벌밴 off → 이후 세트는 커스텀 밴 필요
 
+  // 이전 세트에서 선택한 맵 기록
+  if(globalBan) bannedMaps.push(currentMap);
+
   currentSet++;
   currentTurn = 0;
   selectedThisTurn = [];
@@ -741,9 +799,13 @@ function nextSet() {
   document.getElementById("draftPhase").classList.add("hidden");
   document.getElementById("log").innerHTML = "";
 
-  // 커스텀 글로벌 밴 단계 호출하지 않고 바로 맵 선택 → draftPhase
-  document.getElementById("mapSelect").classList.remove("hidden");
-  updateSetMapInfo();
+  // 5세트 이상이면 [다음 세트 진행] 버튼 비활성화
+  if(currentSet > 5){
+    document.getElementById("nextSetBtn").style.display = "none";
+  } else {
+    document.getElementById("mapSelect").classList.remove("hidden");
+    updateSetMapInfo();
+  }
 
   const currentLineupDiv = document.getElementById("currentSurvivors");
   if(currentLineupDiv) currentLineupDiv.innerHTML = "";
