@@ -13,7 +13,7 @@ select, button { margin: 10px; padding: 5px; }
        background: #333; cursor: pointer; transition: border 0.2s; }
 .card img { width: 70px; height: 70px; object-fit: cover; }
 .selected { border: 3px solid #0f0; }
-#log { margin-top: 20px; max-height: 200px; overflow-y: auto; text-align: left; border-top: 1px solid #555; padding-top: 10px;}
+#log { margin-top: 20px; max-height: 300px; overflow-y: auto; text-align: left; border-top: 1px solid #555; padding-top: 10px;}
 #finishTurnBtn {
   margin-top: 20px;
   padding: 15px 30px;
@@ -93,7 +93,7 @@ let selectedThisTurn = [];
 let survivors = Array.from({length: 50}, (_, i) => ({name: `생존자${i+1}`, img: "https://via.placeholder.com/70"}));
 let hunters   = Array.from({length: 33}, (_, i) => ({name: `감시자${i+1}`, img: "https://via.placeholder.com/70"}));
 
-// 세트별 밴픽 순서
+// 세트별 밴픽 순서 (간단화)
 let setFlows = {
   1: [
     {side: "hunter", action: "ban", target: "survivor", count: 2, time: 120},
@@ -110,6 +110,10 @@ setFlows[2] = setFlows[1];
 setFlows[3] = setFlows[1];
 setFlows[4] = setFlows[1];
 setFlows[5] = setFlows[1];
+
+// 선택 캐릭터 저장
+let finalSurvivors = [];
+let finalHunter = null;
 
 function goMapSelect() {
   currentSet = parseInt(document.getElementById("setNumber").value);
@@ -135,8 +139,7 @@ function startTurn() {
 
   let flow = setFlows[currentSet];
   if (currentTurn >= flow.length) {
-    document.getElementById("turnInfo").innerText = "밴픽 종료";
-    document.getElementById("cardList").innerHTML = "";
+    showFinalLineup();
     return;
   }
 
@@ -152,36 +155,34 @@ function renderCards(target, maxCount) {
   const listDiv = document.getElementById("cardList");
   listDiv.innerHTML = "";
   const pool = target === "survivor" ? survivors : hunters;
-
   selectedThisTurn = [];
   const finishBtn = document.getElementById("finishTurnBtn");
   finishBtn.disabled = true;
+
+  let turn = setFlows[currentSet][currentTurn];
+  const isTraitTurn = turn.action === "ready";
 
   pool.forEach(c => {
     let div = document.createElement("div");
     div.className = "card";
     div.innerHTML = `<img src="${c.img}"><span>${c.name}</span>`;
-    div.onclick = () => {
-      if (div.classList.contains("selected")) {
-        div.classList.remove("selected");
-        selectedThisTurn = selectedThisTurn.filter(x => x !== c);
-      } else {
-        if (selectedThisTurn.length >= maxCount && maxCount !== 0) return;
-        div.classList.add("selected");
-        selectedThisTurn.push(c);
-      }
-
-      let turn = setFlows[currentSet][currentTurn];
-      if(turn.action === "ready") {
-        // trait set 턴 → 언제든 완료 가능
-        finishBtn.disabled = false;
-      } else {
-        // 일반 턴 → 선택 개수 충족 시 버튼 활성
-        finishBtn.disabled = selectedThisTurn.length !== maxCount;
-      }
-    };
+    if(!isTraitTurn){
+      div.onclick = () => {
+        if (div.classList.contains("selected")) {
+          div.classList.remove("selected");
+          selectedThisTurn = selectedThisTurn.filter(x => x !== c);
+        } else {
+          if (selectedThisTurn.length >= maxCount && maxCount !== 0) return;
+          div.classList.add("selected");
+          selectedThisTurn.push(c);
+        }
+        finishBtn.disabled = isTraitTurn ? false : selectedThisTurn.length !== maxCount;
+      };
+    }
     listDiv.appendChild(div);
   });
+
+  if(isTraitTurn) finishBtn.disabled = false;
 }
 
 function startTimer(seconds) {
@@ -193,7 +194,7 @@ function startTimer(seconds) {
     updateTimerDisplay();
     if (timeLeft <= 0) {
       clearInterval(timerId);
-      finishTurn([]); // 제한시간 초과 시 선택 없음 처리
+      finishTurn([]); // 시간 종료 시 선택 없음 처리
     }
   }, 1000);
 }
@@ -206,11 +207,56 @@ function updateTimerDisplay() {
 
 function finishTurn(selectedChars) {
   clearInterval(timerId);
-  if(selectedChars.length === 0) selectedChars = selectedThisTurn; // 완료 버튼 클릭 시 선택
+  if(!selectedChars || selectedChars.length === 0) selectedChars = selectedThisTurn;
+
   let turn = setFlows[currentSet][currentTurn];
-  document.getElementById("log").innerHTML += `<div>[${turn.side}] ${turn.action} → ${selectedChars.map(c=>c.name).join(", ") || "선택 없음"}</div>`;
+  const displayText = selectedChars.length > 0 ? selectedChars.map(c=>c.name).join(", ") : "(선택 없음)";
+  document.getElementById("log").innerHTML += `<div>[${turn.side}] ${turn.action} → ${displayText}</div>`;
+
+  // 최종 캐릭터 저장
+  if(turn.side === "survivor" && turn.action === "pick"){
+    finalSurvivors.push(...selectedChars);
+  }
+  if(turn.side === "hunter" && turn.action === "pick"){
+    finalHunter = selectedChars[0];
+  }
+
   currentTurn++;
-  startTurn();
+  if(currentTurn >= setFlows[currentSet].length){
+    showFinalLineup();
+  } else {
+    startTurn();
+  }
+}
+
+// 최종 라인업 표시
+function showFinalLineup(){
+  document.getElementById("draftPhase").classList.add("hidden");
+  const logDiv = document.getElementById("log");
+  logDiv.innerHTML += `<h2>최종 라인업</h2>`;
+  const lineupDiv = document.createElement("div");
+  lineupDiv.className = "cards";
+
+  finalSurvivors.forEach(c => {
+    let div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `<img src="${c.img}"><span>${c.name}</span>`;
+    lineupDiv.appendChild(div);
+  });
+
+  // 간격 띄우기
+  let spacer = document.createElement("div");
+  spacer.style.width = "20px";
+  lineupDiv.appendChild(spacer);
+
+  if(finalHunter){
+    let div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `<img src="${finalHunter.img}"><span>${finalHunter.name}</span>`;
+    lineupDiv.appendChild(div);
+  }
+
+  logDiv.appendChild(lineupDiv);
 }
 </script>
 
