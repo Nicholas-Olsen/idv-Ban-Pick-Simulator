@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>밴픽 테스트</title>
+<title>idV 가상 밴픽 시뮬레이</title>
 <style>
 body { font-family: sans-serif; background: #222; color: #eee; margin:0; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; min-height: 100vh;}
 .hidden { display: none; }
@@ -321,27 +321,27 @@ function finishTurn(selectedChars){
 
 
 function showFinalLineup(){
-  // 카드 선택 화면 숨기기, 카드 리스트 초기화
+  // 카드 선택 화면 숨기기
   document.getElementById("draftPhase").classList.add("hidden");
-  const cardList = document.getElementById("cardList");
-  if(cardList) cardList.innerHTML = "";
 
-  // 기존에 있던 finalLineupContainer 제거 (중복 방지)
+  // 기존 finalLineupContainer 제거 (중복 방지)
   const existing = document.querySelector('.finalLineupContainer');
   if(existing) existing.remove();
 
+  // 로그에 히스토리 추가
   const logDiv = document.getElementById("log");
   logDiv.innerHTML += `<h2>밴픽 히스토리</h2>`;
 
   // 최종 라인업 컨테이너 생성
   const container = document.createElement("div");
   container.className = "finalLineupContainer";
+  container.id = "finalLineupContainer";  // ⭐ id 부여
   container.innerHTML = "<h2>최종 라인업</h2>";
 
   const lineupDiv = document.createElement("div");
   lineupDiv.className = "finalLineup";
 
-  // 생존자 4명 (선택된 순서대로)
+  // 생존자 4명
   finalSurvivors.slice(0,4).forEach(c => {
     let div = document.createElement("div");
     div.className = "card";
@@ -349,12 +349,12 @@ function showFinalLineup(){
     lineupDiv.appendChild(div);
   });
 
-  // 간격 띄우기
+  // 간격
   let spacer = document.createElement("div");
   spacer.style.width = "20px";
   lineupDiv.appendChild(spacer);
 
-  // 감시자 1명
+  // 감시자
   if(finalHunter){
     let div = document.createElement("div");
     div.className = "card";
@@ -364,13 +364,12 @@ function showFinalLineup(){
 
   container.appendChild(lineupDiv);
 
-  // 로그 아래(또는 로그 다음)에 삽입
-  logDiv.parentNode.insertBefore(container, logDiv.nextSibling);
+  // ⭐ log 바깥 → body 맨 아래에 붙임
+  document.body.appendChild(container);
 
   // 종료/다음 세트 옵션 표시
   showEndOptions();
 }
-
 
 
 function showEndOptions(){
@@ -389,6 +388,10 @@ function showEndOptions(){
 }
 
 function endMatch(){
+  // 최종 라인업 제거 ⭐
+  const existing = document.getElementById("finalLineupContainer");
+  if(existing) existing.remove();
+
   // 초기화
   bannedSurvivors = [];
   bannedHunters = [];
@@ -401,7 +404,6 @@ function endMatch(){
   finalHunter = null;
   currentSetPicked = {survivor:[], hunter:[], bannedSurvivor:[], bannedHunter:[]};
 
-  // 화면 초기화
   document.getElementById("endOptions").classList.add("hidden");
   document.getElementById("log").innerHTML = "";
   document.getElementById("draftPhase").classList.add("hidden");
@@ -409,16 +411,17 @@ function endMatch(){
   document.getElementById("mapSelect").classList.add("hidden");
   document.getElementById("roleSelect").classList.add("hidden");
 
-  // 글로벌 밴 선택 화면으로
   document.getElementById("globalBanSelect").classList.remove("hidden");
   document.getElementById("globalNextBtn").disabled = true;
-  document.getElementById("globalOnBtn").style.backgroundColor = "#555";
-  document.getElementById("globalOffBtn").style.backgroundColor = "#555";
+  document.getElementById("globalOnBtn").classList.remove("selected");
+  document.getElementById("globalOffBtn").classList.remove("selected");
 }
 
-
 function nextSet(){
-  // 세트 번호 증가
+  // 이전 세트 최종 라인업 제거 ⭐
+  const existing = document.getElementById("finalLineupContainer");
+  if(existing) existing.remove();
+
   currentSet++;
   currentTurn = 0;
   selectedThisTurn = [];
@@ -437,3 +440,4 @@ function nextSet(){
 </script>
 </body>
 </html>
+
