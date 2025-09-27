@@ -225,7 +225,7 @@ button.selected {
 </head>
 <body>
 
-<h1>밴픽 테스트</h1>
+<h1>밴픽 시뮬레이터</h1>
 <div id="setMapInfo"></div>
 
 <!-- 글로벌 밴 선택 -->
@@ -706,7 +706,7 @@ function startTimer(seconds){
 
 function updateTimerDisplay(){
   let turn = setFlows[currentSet][currentTurn];
-  document.getElementById("turnInfo").innerText = `[${turn.side}] ${turn.target} ${turn.action} ${turn.count>0?turn.count+"개":""} | 남은시간: ${timeLeft}s`;
+  document.getElementById("turnInfo").innerText = `[${turn.side}] ${turn.target} ${turn.action} ${turn.count>0?turn.count+"개":""} | 남은 시간: ${timeLeft}초`;
 }
 
 function finishTurn(selectedChars){
@@ -897,6 +897,7 @@ function nextSet() {
 </script>
 </body>
 </html>
+
 
 
 
