@@ -1,88 +1,218 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>밴픽 시뮬레이터 (1단계)</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #1e1e1e;
-      color: #f0f0f0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-    }
-    .screen {
-      display: none;
-      max-width: 600px;
-      width: 100%;
-      padding: 20px;
-      border: 1px solid #444;
-      border-radius: 8px;
-      background-color: #2b2b2b;
-      margin-top: 20px;
-    }
-    .active {
-      display: block;
-    }
-    button {
-      margin: 10px;
-      padding: 10px 20px;
-      background: #4caf50;
-      border: none;
-      border-radius: 5px;
-      color: white;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #45a049;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>밴픽 테스트</title>
+<style>
+body { font-family: sans-serif; background: #222; color: #eee; text-align: center; }
+.hidden { display: none; }
+select, button { margin: 10px; padding: 5px; }
+.cards { display: flex; flex-wrap: wrap; justify-content: center; margin-top: 20px; }
+.card { width: 80px; height: 100px; border: 2px solid #555; margin: 5px;
+       display: flex; flex-direction: column; align-items: center; justify-content: center;
+       background: #333; cursor: pointer; transition: border 0.2s; }
+.card img { width: 70px; height: 70px; object-fit: cover; }
+.selected { border: 3px solid #0f0; }
+#log { margin-top: 20px; max-height: 200px; overflow-y: auto; text-align: left; border-top: 1px solid #555; padding-top: 10px;}
+#finishTurnBtn {
+  margin-top: 20px;
+  padding: 15px 30px;
+  font-size: 18px;
+  font-weight: bold;
+  background-color: #0f0;
+  color: #222;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+#finishTurnBtn:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+}
+</style>
 </head>
 <body>
-  <h1>밴픽 시뮬레이터 (1단계)</h1>
 
-  <!-- 화면 1: 세트 지정 -->
-  <div id="setScreen" class="screen active">
-    <h2>1. 세트 지정</h2>
-    <p>방장이 세트 번호를 선택하세요.</p>
-    <button onclick="goToScreen('mapScreen')">세트 선택 완료</button>
-  </div>
+<h1>밴픽 테스트</h1>
 
-  <!-- 화면 2: 맵 지정 -->
-  <div id="mapScreen" class="screen">
-    <h2>2. 맵 지정</h2>
-    <p>맵을 선택하세요.</p>
-    <button onclick="goToScreen('sideScreen')">맵 선택 완료</button>
-  </div>
+<!-- 세트 선택 -->
+<div id="setSelect">
+  <h2>세트 번호를 선택하세요</h2>
+  <select id="setNumber">
+    <option value="1">1세트</option>
+    <option value="2">2세트</option>
+    <option value="3">3세트</option>
+    <option value="4">4세트</option>
+    <option value="5">5세트</option>
+  </select>
+  <button onclick="goMapSelect()">다음</button>
+</div>
 
-  <!-- 화면 3: 진영 선택 -->
-  <div id="sideScreen" class="screen">
-    <h2>3. 진영 선택</h2>
-    <p>방장과 참여자가 각각 감시자/생존자를 선택합니다.</p>
-    <button onclick="goToScreen('confirmScreen')">진영 선택 완료</button>
-  </div>
+<!-- 맵 선택 -->
+<div id="mapSelect" class="hidden">
+  <h2>맵을 선택하세요</h2>
+  <select id="mapNumber">
+    <option value="1">맵 1</option>
+    <option value="2">맵 2</option>
+    <option value="3">맵 3</option>
+    <option value="4">맵 4</option>
+    <option value="5">맵 5</option>
+    <option value="6">맵 6</option>
+    <option value="7">맵 7</option>
+    <option value="8">맵 8</option>
+  </select>
+  <button onclick="goRoleSelect()">다음</button>
+</div>
 
-  <!-- 화면 4: 진영 선택 확인 -->
-  <div id="confirmScreen" class="screen">
-    <h2>4. 진영 선택 확인</h2>
-    <p>양측 진영 선택이 확정되었습니다.</p>
-    <button onclick="goToScreen('banpickScreen')">밴픽 시작</button>
-  </div>
+<!-- 진영 선택 -->
+<div id="roleSelect" class="hidden">
+  <h2>진영을 선택하세요</h2>
+  <button onclick="chooseRole('survivor')">생존자</button>
+  <button onclick="chooseRole('hunter')">감시자</button>
+</div>
 
-  <!-- 화면 5: 밴픽 시작 -->
-  <div id="banpickScreen" class="screen">
-    <h2>5. 밴픽 화면</h2>
-    <p>여기서부터 세트 규칙에 맞춰 밴픽 절차가 진행됩니다.</p>
-    <button onclick="alert('여기서부터 턴/타이머 구현 예정')">턴 진행 테스트</button>
-  </div>
+<!-- 밴픽 진행 -->
+<div id="draftPhase" class="hidden">
+  <h2 id="turnInfo">턴 진행 중...</h2>
+  <div class="cards" id="cardList"></div>
+  <button id="finishTurnBtn" onclick="finishTurn(selectedThisTurn)" disabled>완료</button>
+</div>
 
-  <script>
-    function goToScreen(screenId) {
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      document.getElementById(screenId).classList.add('active');
+<div id="log"></div>
+
+<script>
+let currentSet = 1;
+let currentMap = 1;
+let playerRole = null;
+let currentTurn = 0;
+let timerId = null;
+let timeLeft = 0;
+let selectedThisTurn = [];
+
+// 샘플 캐릭터 데이터
+let survivors = Array.from({length: 50}, (_, i) => ({name: `생존자${i+1}`, img: "https://via.placeholder.com/70"}));
+let hunters   = Array.from({length: 33}, (_, i) => ({name: `감시자${i+1}`, img: "https://via.placeholder.com/70"}));
+
+// 세트별 밴픽 순서
+let setFlows = {
+  1: [
+    {side: "hunter", action: "ban", target: "survivor", count: 2, time: 120},
+    {side: "survivor", action: "pick", target: "survivor", count: 2, time: 120},
+    {side: "hunter", action: "ban", target: "survivor", count: 1, time: 60},
+    {side: "survivor", action: "pick", target: "survivor", count: 1, time: 60},
+    {side: "hunter", action: "ban", target: "survivor", count: 1, time: 60},
+    {side: "survivor", action: "pick", target: "survivor", count: 1, time: 60},
+    {side: "survivor", action: "ready", target: "trait", count: 0, time: 120},
+    {side: "hunter", action: "pick", target: "hunter", count: 1, time: 120}
+  ]
+};
+setFlows[2] = setFlows[1];
+setFlows[3] = setFlows[1];
+setFlows[4] = setFlows[1];
+setFlows[5] = setFlows[1];
+
+function goMapSelect() {
+  currentSet = parseInt(document.getElementById("setNumber").value);
+  document.getElementById("setSelect").classList.add("hidden");
+  document.getElementById("mapSelect").classList.remove("hidden");
+}
+function goRoleSelect() {
+  currentMap = parseInt(document.getElementById("mapNumber").value);
+  document.getElementById("mapSelect").classList.add("hidden");
+  document.getElementById("roleSelect").classList.remove("hidden");
+}
+function chooseRole(role) {
+  playerRole = role;
+  document.getElementById("roleSelect").classList.add("hidden");
+  document.getElementById("draftPhase").classList.remove("hidden");
+  startTurn();
+}
+
+function startTurn() {
+  clearInterval(timerId);
+  selectedThisTurn = [];
+  document.getElementById("finishTurnBtn").disabled = true;
+
+  let flow = setFlows[currentSet];
+  if (currentTurn >= flow.length) {
+    document.getElementById("turnInfo").innerText = "밴픽 종료";
+    document.getElementById("cardList").innerHTML = "";
+    return;
+  }
+
+  let turn = flow[currentTurn];
+  document.getElementById("turnInfo").innerText =
+    `[${turn.side}] ${turn.target} ${turn.action} ${turn.count > 0 ? turn.count + "개" : ""}`;
+
+  renderCards(turn.target, turn.count);
+  startTimer(turn.time);
+}
+
+function renderCards(target, maxCount) {
+  const listDiv = document.getElementById("cardList");
+  listDiv.innerHTML = "";
+  const pool = target === "survivor" ? survivors : hunters;
+
+  selectedThisTurn = [];
+  const finishBtn = document.getElementById("finishTurnBtn");
+  finishBtn.disabled = true;
+
+  pool.forEach(c => {
+    let div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `<img src="${c.img}"><span>${c.name}</span>`;
+    div.onclick = () => {
+      if (div.classList.contains("selected")) {
+        div.classList.remove("selected");
+        selectedThisTurn = selectedThisTurn.filter(x => x !== c);
+      } else {
+        if (selectedThisTurn.length >= maxCount && maxCount !== 0) return;
+        div.classList.add("selected");
+        selectedThisTurn.push(c);
+      }
+
+      let turn = setFlows[currentSet][currentTurn];
+      if(turn.action === "ready") {
+        // trait set 턴 → 언제든 완료 가능
+        finishBtn.disabled = false;
+      } else {
+        // 일반 턴 → 선택 개수 충족 시 버튼 활성
+        finishBtn.disabled = selectedThisTurn.length !== maxCount;
+      }
+    };
+    listDiv.appendChild(div);
+  });
+}
+
+function startTimer(seconds) {
+  timeLeft = seconds;
+  updateTimerDisplay();
+  clearInterval(timerId);
+  timerId = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+    if (timeLeft <= 0) {
+      clearInterval(timerId);
+      finishTurn([]); // 제한시간 초과 시 선택 없음 처리
     }
-  </script>
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  let turn = setFlows[currentSet][currentTurn];
+  document.getElementById("turnInfo").innerText =
+    `[${turn.side}] ${turn.target} ${turn.action} ${turn.count > 0 ? turn.count + "개" : ""} | 남은시간: ${timeLeft}s`;
+}
+
+function finishTurn(selectedChars) {
+  clearInterval(timerId);
+  if(selectedChars.length === 0) selectedChars = selectedThisTurn; // 완료 버튼 클릭 시 선택
+  let turn = setFlows[currentSet][currentTurn];
+  document.getElementById("log").innerHTML += `<div>[${turn.side}] ${turn.action} → ${selectedChars.map(c=>c.name).join(", ") || "선택 없음"}</div>`;
+  currentTurn++;
+  startTurn();
+}
+</script>
+
 </body>
 </html>
