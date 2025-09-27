@@ -66,15 +66,18 @@ select, button {
   transition: border 0.2s, opacity 0.2s;
 }
 
-  @font-face {
+@font-face {
   font-family: "LSSRegular";
   src: url("./assets/fonts/LSSRegular.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
 
-.cardName {
-  font-family: "LSSRegular", sans-serif;
+/* 2. 카드 이름 span 전용 클래스 */
+.card span {
+  font-family: "LSSRegular", sans-serif !important; /* !important로 우선 적용 */
+  font-size: 16px; /* 필요하면 크기 조절 */
+  color: #ffffff; /* 필요하면 색상 지정 */
 }
 
 .card img { width: 90px; height: 90px; object-fit: cover; }
@@ -572,7 +575,7 @@ function renderCustomBanCards(target){
   pool.forEach(c=>{
     let div = document.createElement("div");
     div.className = "card";
-    div.innerHTML = `<img src="${c.img}"><span class="cardName">${c.name}</span>`;
+    div.innerHTML = `<img src="${c.img}"><span>${c.name}</span>`;
     div.onclick = ()=>{
       if(selectedCustomBan[target].includes(c.name)){
         // 선택 해제
