@@ -82,22 +82,25 @@ select, button {
 
 .card img { width: 90px; height: 90px; object-fit: cover; }
 .card.picked { 
-  border: 3px solid #00f; 
-  opacity: 0.7; 
+  border: 4px solid #2670e8; 
+  opacity: 0.8; 
+  font-weight: bold;    
+  box-shadow: 0 0 10px rgba(62,158,254, 0.5);
   cursor: not-allowed; 
 }
-.card.selected { border: 3px solid #0f0; }
-.card.banned { opacity: 0.4; cursor: not-allowed; }
+.card.selected { border: 3px solid #7dea47; }
+.card.banned { opacity: 0.35; cursor: not-allowed; }
 .card.banned::after {
   content: "X";
   position: absolute;
   top: 5px; left: 5px;
-  color: red;
+  color: #f55042;
   font-weight: bold;
-  font-size: 20px;
+  font-size: 40px;
 }
 .card.globalBanned { 
-  border: 3px solid darkred; 
+  border: 4px solid #be382c; 
+  border-radius: 10px;  
   opacity: 0.25; 
   cursor: not-allowed; 
 }
@@ -897,6 +900,7 @@ function nextSet() {
 </script>
 </body>
 </html>
+
 
 
 
