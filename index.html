@@ -66,6 +66,17 @@ select, button {
   transition: border 0.2s, opacity 0.2s;
 }
 
+  @font-face {
+  font-family: "LSSRegular";
+  src: url("./asset/fonts/LSSRegular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+.cardName {
+  font-family: "LSSRegular", sans-serif;
+}
+
 .card img { width: 90px; height: 90px; object-fit: cover; }
 .card.picked { 
   border: 3px solid #00f; 
@@ -333,11 +344,78 @@ const mapNames = [
 let survivors = [
   { name: "의사", img: "./images/s1.jpg" },
   { name: "변호사", img: "./images/s2.jpg" },
-  { name: "도둑", img: "./images/s3.jpg" }
+  { name: "도둑", img: "./images/s3.jpg" },
+  { name: "정원사", img: "./images/s4.jpg" },
+  { name: "마술사", img: "./images/s5.jpg" },
+  { name: "모험가", img: "./images/s6.jpg" },
+  { name: "용병", img: "./images/s7.jpg" },
+  { name: "공군", img: "./images/s8.jpg" },
+  { name: "샤먼", img: "./images/s9.jpg" },
+  { name: "기계공", img: "./images/s10.jpg" },
+  { name: "포워드", img: "./images/s11.jpg" },
+  { name: "맹인", img: "./images/s12.jpg" },
+  { name: "조향사", img: "./images/s13.jpg" },
+  { name: "카우보이", img: "./images/s14.jpg" },
+  { name: "무희", img: "./images/s15.jpg" },
+  { name: "선지자", img: "./images/s16.jpg" },
+  { name: "납관사", img: "./images/s17.jpg" },
+  { name: "탐사원", img: "./images/s18.jpg" },
+  { name: "주술사", img: "./images/s19.jpg" },
+  { name: "야만인", img: "./images/s20.jpg" },
+  { name: "곡예사", img: "./images/s21.jpg" },
+  { name: "항해사", img: "./images/s22.jpg" },
+  { name: "바텐더", img: "./images/s23.jpg" },
+  { name: "우편 배달부", img: "./images/s24.jpg" },
+  { name: "묘지기", img: "./images/s25.jpg" },
+  { name: "죄수", img: "./images/s26.jpg" },
+  { name: "곤충학자", img: "./images/s27.jpg" },
+  { name: "화가", img: "./images/s28.jpg" },
+  { name: "타자", img: "./images/s29.jpg" },
+  { name: "장난감 상인", img: "./images/s30.jpg" },
+  { name: "환자", img: "./images/s31.jpg" },
+  { name: "'심리학자'", img: "./images/s32.jpg" },
+  { name: "소설가", img: "./images/s33.jpg" },
+  { name: "'여자아이'", img: "./images/s34.jpg" },
+  { name: "우는 광대", img: "./images/s35.jpg" },
+  { name: "교수", img: "./images/s36.jpg" },
+  { name: "골동품 상인", img: "./images/s37.jpg" },
+  { name: "작곡가", img: "./images/s38.jpg" },
+  { name: "기자", img: "./images/s39.jpg" },
+  { name: "항공 전문가", img: "./images/s40.jpg" },
+  { name: "치어리더", img: "./images/s41.jpg" },
+  { name: "인형사", img: "./images/s42.jpg" },
+  { name: "화재조사관", img: "./images/s43.jpg" },
+  { name: "'파로 부인'", img: "./images/s44.jpg" },
+  { name: "'기사'", img: "./images/s45.jpg" },
+  { name: "기상학자", img: "./images/s46.jpg" },
+  { name: "궁수", img: "./images/s47.jpg" },
+  { name: "'탈출 마스터'", img: "./images/s48.jpg" },
+  { name: "행운아", img: "./images/s49.jpg" },
 ];
 
 
-let hunters   = Array.from({length: 33}, (_, i) => ({name: `감시자${i+1}`, img: "https://via.placeholder.com/70"}));
+let hunters = [
+  { name: "공장장", img: "./images/h1.jpg" },
+  { name: "공장장", img: "./images/h2.jpg" },
+  { name: "공장장", img: "./images/h3.jpg" },
+  { name: "공장장", img: "./images/h4.jpg" },
+  { name: "공장장", img: "./images/h5.jpg" },
+  { name: "공장장", img: "./images/h6.jpg" },
+  { name: "공장장", img: "./images/h7.jpg" },
+  { name: "공장장", img: "./images/h8.jpg" },
+  { name: "공장장", img: "./images/h9.jpg" },
+  { name: "공장장", img: "./images/h10.jpg" },
+  { name: "공장장", img: "./images/h11.jpg" },
+  { name: "공장장", img: "./images/h12.jpg" },
+  { name: "공장장", img: "./images/h13.jpg" },
+  { name: "공장장", img: "./images/h14.jpg" },
+  { name: "공장장", img: "./images/h15.jpg" },
+  { name: "공장장", img: "./images/h15.jpg" },
+  { name: "공장장", img: "./images/h15.jpg" },
+  { name: "공장장", img: "./images/h15.jpg" },
+  { name: "공장장", img: "./images/h15.jpg" },
+  { name: "공장장", img: "./images/h15.jpg" },
+];
 
 // 세트별 밴픽 순서 (1세트 예시)
 let setFlows = {};
@@ -494,7 +572,7 @@ function renderCustomBanCards(target){
   pool.forEach(c=>{
     let div = document.createElement("div");
     div.className = "card";
-    div.innerHTML = `<img src="${c.img}"><span>${c.name}</span>`;
+    div.innerHTML = `<img src="${c.img}"><span class="cardName">${c.name}</span>`;
     div.onclick = ()=>{
       if(selectedCustomBan[target].includes(c.name)){
         // 선택 해제
@@ -816,6 +894,7 @@ function nextSet() {
 </script>
 </body>
 </html>
+
 
 
 
