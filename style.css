@@ -32,8 +32,13 @@ select, button {
   margin-left: 0;      /* 기본 마진 제거, 필요시 조정 */
 }
 
+.card .long-name {
+  font-size: 15px;      /* 바이올리니스트 조정 */
+  letter-spacing: -0.5px;
+}
+
 .cards {
-  display: flex;           /* grid → flex로 변경 */
+  display: flex;           
   flex-wrap: wrap;         /* 자동 줄바꿈 */
   justify-content: center; /* 가운데 정렬 */
   gap: 10px;               /* 카드 간 간격 */
@@ -42,10 +47,9 @@ select, button {
   box-sizing: border-box;
 }
 
-/* 카드 컨테이너를 grid 아이템으로 */
 .card-container {
   position: relative;
-  display: flex;           /* flex로 카드 정렬 */
+  display: flex;          
   flex-direction: column;
   align-items: center;
   width: 100px;            /* 카드 고정 너비 */
