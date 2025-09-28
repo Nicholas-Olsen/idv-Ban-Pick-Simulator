@@ -370,6 +370,7 @@ function startCustomGlobalBan() {
   updateCustomBanButton();
 }
 
+// 커스텀 글로벌 밴 단계 카드 렌더링
 function renderCustomBanCards(target){
   const container = document.getElementById(target==="survivor"?"customBanSurvivors":"customBanHunters");
   container.innerHTML = "";
@@ -379,6 +380,12 @@ function renderCustomBanCards(target){
     let div = document.createElement("div");
     div.className = "card";
     div.innerHTML = `<img src="${c.img}"><span>${c.name}</span>`;
+
+    // 🔹 특정 이름 카드에만 클래스 추가
+    if(c.name === "바이올리니스트"){
+        div.querySelector("span").classList.add("long-name");
+    }
+
     div.onclick = ()=>{
       if(selectedCustomBan[target].includes(c.name)){
         // 선택 해제
@@ -467,6 +474,11 @@ function renderCards(target, maxCount){
     div.className = "card";
     div.innerHTML = `<img src="${c.img}"><span>${c.name}</span>`;
 
+    // 🔹 특정 이름 카드에만 클래스 추가
+    if(c.name === "바이올리니스트"){
+        div.querySelector("span").classList.add("long-name");
+    }
+
     const isGlobalBanned = (target==="survivor" && bannedSurvivors.includes(c.name)) ||
                            (target==="hunter" && bannedHunters.includes(c.name));
     const isPickedThisSet = (target==="survivor" && currentSetPicked.survivor.includes(c.name)) ||
@@ -508,7 +520,6 @@ else {
     listDiv.appendChild(container);
   });
 }
-
 
 function startTimer(seconds){
   timeLeft = seconds;
@@ -720,5 +731,6 @@ function nextSet() {
 </script>
 </body>
 </html>
+
 
 
