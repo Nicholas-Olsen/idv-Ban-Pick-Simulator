@@ -36,19 +36,28 @@ select, button {
 #draftPhase h3,
 #customGlobalBan h2,
 #customGlobalBan h3 {
-  padding-left: 25px;  /* 좌측 여백 */
+  padding-left: 35px;  /* 좌측 여백 */
   margin-left: 0;      /* 기본 마진 제거, 필요시 조정 */
 }
 
-
-/* 카드 리스트 */
 .cards {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  display: flex;           /* grid → flex로 변경 */
+  flex-wrap: wrap;         /* 자동 줄바꿈 */
+  justify-content: center; /* 가운데 정렬 */
+  gap: 10px;               /* 카드 간 간격 */
   margin-top: 20px;
-  padding: 0 30px;  /* 좌우 여백 */
-  box-sizing: border-box; 
+  padding: 0 30px;
+  box-sizing: border-box;
+}
+
+/* 카드 컨테이너를 grid 아이템으로 */
+.card-container {
+  position: relative;
+  display: flex;           /* flex로 카드 정렬 */
+  flex-direction: column;
+  align-items: center;
+  width: 100px;            /* 카드 고정 너비 */
+  height: 130px;           /* 카드 고정 높이 */
 }
 
 /* 카드 */
@@ -56,15 +65,16 @@ select, button {
   position: relative;
   width: 100px;
   height: 130px;
-  border: 2px solid #555;
+  border: 2px solid #555;   /* 항상 있는 회색 테두리 */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   background: #333;
   cursor: pointer;
-  transition: border 0.2s, opacity 0.2s;
+  transition: box-shadow 0.2s, opacity 0.2s; /* border 말고 shadow로 효과 */
 }
+
 
 @font-face {
   font-family: "LSSRegular";
@@ -73,44 +83,53 @@ select, button {
   font-style: normal;
 }
 
-/* 2. 카드 이름 span 전용 클래스 */
+/* 카드 이름 span 전용 클래스 */
 .card span {
-  font-family: "LSSRegular", sans-serif !important; /* !important로 우선 적용 */
-  font-size: 16px; /* 필요하면 크기 조절 */
-  color: #ffffff; /* 필요하면 색상 지정 */
+  font-family: "LSSRegular", sans-serif !important; 
+  color: #ffffff; 
 }
 
 
 .card img { width: 90px; height: 90px; object-fit: cover; } 
 
-.card.picked { 
-  border: 4px solid #0166fd; 
-  opacity: 1.0; 
-  font-weight: bold; 
-  border-radius: 10px; 
-  box-shadow: 0 0 20px rgba(62,158,254, 0.7); 
-  cursor: not-allowed; } 
+.card.picked {
+  box-shadow: 0 0 0 4px #0183ee, 0 0 20px rgba(62,158,254, 0.7);
+  font-weight: bold;
+  border-radius: 10px;
+  opacity: 1.0;
+  cursor: not-allowed;
+}
 
-.card.selected { 
-  border: 3px solid #7dea47; } 
-.card.banned { 
-  opacity: 0.35; cursor: not-allowed; } 
+.card.selected {
+  box-shadow: 0 0 0 4px #7dea47;
+}
 
-.card.banned::after { 
-  content: "X"; 
-  position: absolute; 
-  top: 40%; left: 50%; 
-  transform: translate(-50%, -50%); /* 중앙 정렬 */ 
-  color: #f55042; 
-  font-weight: bold; 
-  font-size: 70px; z-index: 2; } 
+.card.banned {
+  opacity: 0.35;
+  cursor: not-allowed;
+  position: relative;      /* ::after 위해 필요 */
+}
 
-.card.globalBanned { 
-  border: 4px solid #be382c; 
-  border-radius: 10px; 
-  text-decoration: line-through; 
-  opacity: 0.2; 
-  cursor: not-allowed; }
+.card-ban {
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #f55042;
+  font-weight: bold;
+  font-size: 70px;
+  z-index: 10; /* 카드보다 위 */
+  pointer-events: none; /* 클릭 무시 */
+  opacity: 0.35; /* 따로 투명도 조절 가능 */
+}
+
+.card.globalBanned {
+  box-shadow: 0 0 0 4px #be382c;
+  border-radius: 10px;
+  text-decoration: line-through;
+  opacity: 0.2;
+  cursor: not-allowed;
+}
 
 
 /* 로그 */
@@ -351,7 +370,8 @@ const mapNames = [
   "달빛강공원",
   "레오의기억",
   "에버슬리핑타운",
-  "차이나타운"
+  "차이나타운",
+  "돌아올 수 없는 숲"
 ];
 
 // 샘플 캐릭터
@@ -416,16 +436,16 @@ let hunters = [
   { name: "거미", img: "./images/h5.jpg" },
   { name: "붉은 나비", img: "./images/h6.jpg" },
   { name: "우산의 영혼", img: "./images/h7.jpg" },
-  { name: "사진사", img: "./images/h8.png" },
-  { name: "광기의 눈", img: "./images/h9.png" },
-  { name: "노란 옷의 왕", img: "./images/h10.png" },
+  { name: "사진사", img: "./images/h8.jpg" },
+  { name: "광기의 눈", img: "./images/h9.jpg" },
+  { name: "노란 옷의 왕", img: "./images/h10.jpg" },
   { name: "꿈의 마녀", img: "./images/h11.jpg" },
   { name: "울보", img: "./images/h12.jpg" },
   { name: "재앙의 도마뱀", img: "./images/h13.jpg" },
   { name: "블러디 퀸", img: "./images/h14.jpg" },
   { name: "수위 26호", img: "./images/h15.jpg" },
   { name: "'사도'", img: "./images/h16.jpg" },
-  { name: "바이올리니스트", img: "./images/h17.png" },
+  { name: "바이올리니스트", img: "./images/h17.jpg" },
   { name: "조각가", img: "./images/h18.jpg" },
   { name: "'박사'", img: "./images/h19.jpg" },
   { name: "파멸의 바퀴", img: "./images/h20.jpg" },
@@ -469,6 +489,13 @@ for(let i=1;i<=5;i++){
     {side: "hunter", action: "pick", target: "hunter", count: 1, time: 120}
   );
 }
+
+const roleDisplay = {
+  hunter: "감시자",
+  survivor: "생존자"
+};
+
+
 
 function selectGlobalBan(isOn){
   globalBan = isOn;
@@ -671,46 +698,63 @@ function renderCards(target, maxCount){
   const finishBtn = document.getElementById("finishTurnBtn");
 
   if(isTraitTurn){
-    // Trait ready 단계에서는 카드 리스트 숨기기
     listDiv.style.display = "none"; 
-    finishBtn.disabled = false; // 완료 버튼은 활성
+    finishBtn.disabled = false; 
+    return;
   } else {
-    // 일반 밴픽 단계에서는 표시
-    listDiv.style.display = "flex"; // 필요 시 flex 등 스타일 유지
-    const pool = target==="survivor"?survivors:hunters;
-
-    pool.forEach(c=>{
-      let div = document.createElement("div");
-      div.className = "card";
-      div.innerHTML = `<img src="${c.img}"><span>${c.name}</span>`;
-
-      const isGlobalBanned = (target==="survivor" && bannedSurvivors.includes(c.name)) ||
-                             (target==="hunter" && bannedHunters.includes(c.name));
-      const isPickedThisSet = (target==="survivor" && currentSetPicked.survivor.includes(c.name)) ||
-                              (target==="hunter" && currentSetPicked.hunter.includes(c.name));
-      const isBannedThisSet = (target==="survivor" && currentSetPicked.bannedSurvivor.includes(c.name)) ||
-                               (target==="hunter" && currentSetPicked.bannedHunter.includes(c.name));
-
-      if(isGlobalBanned) div.classList.add("globalBanned");
-      else if(isBannedThisSet) div.classList.add("banned");
-      else if(isPickedThisSet) div.classList.add("picked");
-      else {
-        div.onclick = () => {
-          if(div.classList.contains("selected")){
-            div.classList.remove("selected");
-            selectedThisTurn = selectedThisTurn.filter(x=>x!==c);
-          } else {
-            if(selectedThisTurn.length >= maxCount && maxCount!==0) return;
-            div.classList.add("selected");
-            selectedThisTurn.push(c);
-          }
-          finishBtn.disabled = selectedThisTurn.length !== maxCount;
-        };
-      }
-
-      listDiv.appendChild(div);
-    });
+    listDiv.style.display = "flex"; 
   }
+
+  const pool = target==="survivor"?survivors:hunters;
+
+  pool.forEach(c => {
+    let container = document.createElement("div");
+    container.className = "card-container";
+
+    let div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `<img src="${c.img}"><span>${c.name}</span>`;
+
+    const isGlobalBanned = (target==="survivor" && bannedSurvivors.includes(c.name)) ||
+                           (target==="hunter" && bannedHunters.includes(c.name));
+    const isPickedThisSet = (target==="survivor" && currentSetPicked.survivor.includes(c.name)) ||
+                            (target==="hunter" && currentSetPicked.hunter.includes(c.name));
+    const isBannedThisSet = (target==="survivor" && currentSetPicked.bannedSurvivor.includes(c.name)) ||
+                             (target==="hunter" && currentSetPicked.bannedHunter.includes(c.name));
+
+if(isGlobalBanned) {
+  div.classList.add("globalBanned");
+} 
+else if(isBannedThisSet) {
+  div.classList.add("banned");
+
+  // 붉은 X 표시 span 추가
+  const banMark = document.createElement("span");
+  banMark.className = "card-ban";
+  banMark.textContent = "✖";   // X 문자
+  div.appendChild(banMark);
+} 
+else if(isPickedThisSet) {
+  div.classList.add("picked");
+} 
+else {
+  div.onclick = () => {
+    if(div.classList.contains("selected")){
+      div.classList.remove("selected");
+      selectedThisTurn = selectedThisTurn.filter(x => x !== c);
+    } else {
+      if(selectedThisTurn.length >= maxCount && maxCount!==0) return;
+      div.classList.add("selected");
+      selectedThisTurn.push(c);
+    }
+    finishBtn.disabled = selectedThisTurn.length !== maxCount;
+  };
+}
+
+
+    container.appendChild(div);
+    listDiv.appendChild(container);
+  });
 }
 
 
@@ -730,7 +774,8 @@ function startTimer(seconds){
 
 function updateTimerDisplay(){
   let turn = setFlows[currentSet][currentTurn];
-  document.getElementById("turnInfo").innerText = `[${turn.side}] ${turn.target} ${turn.action} ${turn.count>0?turn.count+"개":""} | 남은 시간: ${timeLeft}초`;
+  document.getElementById("turnInfo").innerText =
+    `[${roleDisplay[turn.side]}] ${roleDisplay[turn.target] || turn.target} ${turn.action} ${turn.count>0 ? turn.count+"개" : ""} | 남은 시간: ${timeLeft}초`;
 }
 
 function finishTurn(selectedChars){
@@ -750,7 +795,9 @@ function finishTurn(selectedChars){
     }
   }
 
-  document.getElementById("log").innerHTML += `<div>[${turn.side}] ${turn.action} → ${displayText}</div>`;
+document.getElementById("log").innerHTML +=
+  `<div>[${roleDisplay[turn.side]}] ${turn.action} → ${displayText}</div>`;
+
 
 
   // 현재 세트에 반영
@@ -921,11 +968,6 @@ function nextSet() {
 </script>
 </body>
 </html>
-
-
-
-
-
 
 
 
