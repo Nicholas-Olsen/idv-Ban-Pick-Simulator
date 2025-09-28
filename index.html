@@ -93,7 +93,7 @@ select, button {
 }
 
 .card:hover img {
-  transform: scale(1.05);     /* 살짝 확대 */
+  transform: scale(1.10);     /* 살짝 확대 */
 }
 
 .card.picked {
@@ -154,6 +154,7 @@ select, button {
 button.selected {
   background-color: #69dd6b !important; 
   color: #222;
+  font-weight: bold;
 }
 
 /* 진영 선택 후 다음 버튼 */
@@ -167,6 +168,12 @@ button.selected {
   border-radius: 15px;
   cursor: pointer;
   transition: 0.2s;
+  transition: all 0.25s ease; 
+}
+
+#globalNextBtn:hover, #roleNextBtn:hover {
+  transform: scale(1.1);       
+   color: #141414;                  
 }
 
 #hunterRoleBtn, #survivorRoleBtn { 
@@ -174,6 +181,21 @@ button.selected {
   padding: 15 12px; 
   font-size: 20px;
   border-radius: 8px;
+  transition: all 0.25s ease; 
+}
+
+#hunterRoleBtn:hover, #survivorRoleBtn:hover {
+   transform: scale(1.1);       
+   color: #141414; 
+   background-color: #c5ceba;   
+   font-weight:bold;              
+}
+
+#globalOnBtn:hover, #globalOffBtn:hover {
+   transform: scale(1.1);       
+   color: #141414; 
+   background-color: #c5ceba;   
+   font-weight:bold;              
 }
 
 #setgoNextBtn, #mapgoNextBtn {
@@ -186,8 +208,13 @@ button.selected {
   border-radius: 10px;
   cursor: pointer;
   transition: 0.2s;
+  transition: all 0.25s ease; 
 }
 
+#setgoNextBtn:hover, #mapgoNextBtn:hover {
+  transform: scale(1.1);       
+   color: #141414;                  
+}
 
 #roleNextBtn:disabled {
   background-color: #555;
@@ -206,7 +233,12 @@ button.selected {
   border: none;
   border-radius: 16px;
   cursor: pointer;
-  transition: 0.2s;
+  transition: all 0.25s ease; 
+}
+
+#finishTurnBtn:hover, #nextSetBtn:hover, #endMatchBtn:hover {
+  transform: scale(1.1);       
+   color: #141414;                  
 }
 
 #finishTurnBtn:disabled,
@@ -229,7 +261,14 @@ button.selected {
   border-radius: 15px; 
   cursor: pointer;
   transition: 0.2s;
+  transition: all 0.25s ease; 
 }
+
+#confirmCustomBanBtn:hover {
+  transform: scale(1.1);       
+   color: #141414;                  
+}
+
 #confirmCustomBanBtn:disabled {
   background-color: #555;
   cursor: not-allowed;
@@ -978,4 +1017,3 @@ function nextSet() {
 </script>
 </body>
 </html>
-
