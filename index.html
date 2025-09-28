@@ -105,9 +105,9 @@ select, button {
 }
 
 .card.banned {
-  opacity: 0.35;
+  filter: brightness(35%);
   cursor: not-allowed;
-  position: relative;      /* ::after 위해 필요 */
+  position: relative;      
 }
 
 .card-ban {
@@ -115,19 +115,21 @@ select, button {
   top: 35%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: #f55042;
+  color: #f55042 !important;
   font-weight: bold;
-  font-size: 70px;
+  font-size: 70px;SSS
   z-index: 10; /* 카드보다 위 */
   pointer-events: none; /* 클릭 무시 */
-  opacity: 0.35; /* 따로 투명도 조절 가능 */
+  opacity: 0.8 !important;
+  filter: none !important;
 }
 
 .card.globalBanned {
   box-shadow: 0 0 0 4px #be382c;
   border-radius: 10px;
   text-decoration: line-through;
-  opacity: 0.2;
+  opacity: 0.6;
+  filter: brightness(40%);
   cursor: not-allowed;
 }
 
