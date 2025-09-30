@@ -492,7 +492,7 @@ if(turn.side==="survivor" && turn.action==="pick") {
     // 글로벌 밴 적용
     if(globalBan){
       bannedSurvivors.push(...currentSetPicked.survivor.slice(0,3).filter(c=>!bannedSurvivors.includes(c)));
-      bannedHunters.push(...currentSetPicked.hunter.filter성</h2>";
+      bannedHunters.push(...selectedCustomBan.hunter.filter(c => !bannedHunters.includes(c)));
 
   const lineupDiv = document.createElement("div");
   lineupDiv.className = "finalLineup";
