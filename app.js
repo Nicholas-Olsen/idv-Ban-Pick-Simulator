@@ -513,7 +513,7 @@ function showFinalLineup(){
 
   // 로그에 히스토리 추가
   const logDiv = document.getElementById("log");
-  logDiv.innerHTML += `<h2>밴픽 히스토리</h2>`;
+  logDiv.innerHTML += `<h2>밴픽 로그</h2>`;
 
   // 최종 라인업 컨테이너 생성
   const container = document.createElement("div");
