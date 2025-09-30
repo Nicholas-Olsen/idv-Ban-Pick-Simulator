@@ -1,4 +1,3 @@
-
 let globalBan = null;
 let bannedSurvivors = [];
 let bannedHunters = [];
@@ -82,6 +81,7 @@ let survivors = [
   { name: "기상학자", img: "./images/s46.jpg" },
   { name: "궁수", img: "./images/s47.jpg" },
   { name: "'탈출 마스터'", img: "./images/s48.jpg" },
+  { name: "환등사", img: "./images/s50.jpg" },
   { name: "행운아", img: "./images/s49.jpg" },
 ];
 
@@ -125,26 +125,26 @@ let hunters = [
 // 세트별 밴픽 순서 (1세트 예시)
 let setFlows = {};
 
-for(let i=1;i<=5;i++){
+for (let i = 1; i <= 5; i++) {
   setFlows[i] = [
-    {side: "hunter", action: "ban", target: "survivor", count: 2, time: 120}, // 기존 유지
+    { side: "hunter", action: "ban", target: "survivor", count: 2, time: 120 }, // 기존 유지
   ];
 
   // 새로 추가되는 부분
-  if(i === 2){
-    setFlows[i].push({side: "survivor", action: "ban", target: "hunter", count: 1, time: 60}); // 2세트: 1개, 60초
-  } else if(i >= 3){
-    setFlows[i].push({side: "survivor", action: "ban", target: "hunter", count: 2, time: 60}); // 3~5세트: 2개, 60초
+  if (i === 2) {
+    setFlows[i].push({ side: "survivor", action: "ban", target: "hunter", count: 1, time: 60 }); // 2세트: 1개, 60초
+  } else if (i >= 3) {
+    setFlows[i].push({ side: "survivor", action: "ban", target: "hunter", count: 2, time: 60 }); // 3~5세트: 2개, 60초
   }
 
   setFlows[i].push(
-    {side: "survivor", action: "pick", target: "survivor", count: 2, time: 120}, // 기존 유지
-    {side: "hunter", action: "ban", target: "survivor", count: 1, time: 60},
-    {side: "survivor", action: "pick", target: "survivor", count: 1, time: 60},
-    {side: "hunter", action: "ban", target: "survivor", count: 1, time: 60},
-    {side: "survivor", action: "pick", target: "survivor", count: 1, time: 60},
-    {side: "survivor", action: "ready", target: "trait", count: 0, time: 120},
-    {side: "hunter", action: "pick", target: "hunter", count: 1, time: 120}
+    { side: "survivor", action: "pick", target: "survivor", count: 2, time: 120 }, // 기존 유지
+    { side: "hunter", action: "ban", target: "survivor", count: 1, time: 60 },
+    { side: "survivor", action: "pick", target: "survivor", count: 1, time: 60 },
+    { side: "hunter", action: "ban", target: "survivor", count: 1, time: 60 },
+    { side: "survivor", action: "pick", target: "survivor", count: 1, time: 60 },
+    { side: "survivor", action: "ready", target: "trait", count: 0, time: 120 },
+    { side: "hunter", action: "pick", target: "hunter", count: 1, time: 120 }
   );
 }
 
@@ -155,20 +155,20 @@ const roleDisplay = {
 
 
 
-function selectGlobalBan(isOn){
+function selectGlobalBan(isOn) {
   globalBan = isOn;
   document.getElementById("globalOnBtn").classList.toggle("selected", isOn);
   document.getElementById("globalOffBtn").classList.toggle("selected", !isOn);
   document.getElementById("globalNextBtn").disabled = false; // ✅ 항상 활성화
 }
 
-function confirmGlobalBan(){
-  if(globalBan === null){ alert("글로벌 밴 여부를 선택해주세요."); return; }
+function confirmGlobalBan() {
+  if (globalBan === null) { alert("글로벌 밴 여부를 선택해주세요."); return; }
   document.getElementById("globalBanSelect").classList.add("hidden");
   document.getElementById("setSelect").classList.remove("hidden");
 }
 
-function goMapSelect(){
+function goMapSelect() {
   currentSet = parseInt(document.getElementById("setNumber").value);
   document.getElementById("setSelect").classList.add("hidden");
   document.getElementById("mapSelect").classList.remove("hidden");
@@ -182,7 +182,7 @@ function goMapSelect(){
   updateSetMapInfo(); // 표시 업데이트
 }
 
-function goRoleSelect(){
+function goRoleSelect() {
   currentMap = parseInt(document.getElementById("mapNumber").value);
   document.getElementById("mapSelect").classList.add("hidden");
   document.getElementById("roleSelect").classList.remove("hidden");
@@ -191,13 +191,13 @@ function goRoleSelect(){
 }
 
 
-function updateCurrentLineup(){
+function updateCurrentLineup() {
   const container = document.getElementById("currentSurvivors");
   container.innerHTML = "";
   // 중복 제거
-  const uniqueSurvivors = Array.from(new Set(finalSurvivors.map(c=>c.name)))
-                              .map(name => finalSurvivors.find(c=>c.name===name));
-  uniqueSurvivors.slice(0,4).forEach(c => {
+  const uniqueSurvivors = Array.from(new Set(finalSurvivors.map(c => c.name)))
+    .map(name => finalSurvivors.find(c => c.name === name));
+  uniqueSurvivors.slice(0, 4).forEach(c => {
     let div = document.createElement("div");
     div.className = "card";
     div.innerHTML = `<img src="${c.img}"><span>${c.name}</span>`;
@@ -205,15 +205,17 @@ function updateCurrentLineup(){
   });
 }
 
-function chooseRole(role){
+function chooseRole(role) {
   playerRole = role;
 
   // 버튼 색상 업데이트
-  document.getElementById("survivorRoleBtn").classList.toggle("selected", role==="survivor");
-  document.getElementById("hunterRoleBtn").classList.toggle("selected", role==="hunter");
+  document.getElementById("survivorRoleBtn").classList.toggle("selected", role === "survivor");
+  document.getElementById("hunterRoleBtn").classList.toggle("selected", role === "hunter");
 
   // 다음 버튼 활성화
   document.getElementById("roleNextBtn").disabled = false;
+
+  updateSetMapInfo();
 }
 
 
@@ -231,7 +233,7 @@ function goToDraftPhase() {
     if (globalBan && !customBanDone) {
       startCustomGlobalBan();
       customBanDone = true; // 이후 세트는 호출 안함
-    } else if(!globalBan) {
+    } else if (!globalBan) {
       // 글로벌 밴 off → 2세트 이상에서도 커스텀 밴 호출
       startCustomGlobalBan();
       customBanDone = true; // 이후 세트 호출 안함
@@ -245,19 +247,19 @@ function goToDraftPhase() {
 
 function updateCustomGlobalLabels() {
   let survivorCount = (currentSet - 1) * 3;
-  let hunterCount   = (currentSet - 1) * 1;
+  let hunterCount = (currentSet - 1) * 1;
 
   document.getElementById("survivorLabel").innerText = `생존자 : ${survivorCount}개`;
-  document.getElementById("hunterLabel").innerText   = `감시자 : ${hunterCount}개`;
+  document.getElementById("hunterLabel").innerText = `감시자 : ${hunterCount}개`;
 }
 
 
 
-let survivorCount = (currentSet-1)*3;
-let hunterCount = (currentSet-1)*1;
-  
-let customBanTargets = {survivor:0, hunter:0};
-let selectedCustomBan = {survivor:[], hunter:[]};
+let survivorCount = (currentSet - 1) * 3;
+let hunterCount = (currentSet - 1) * 1;
+
+let customBanTargets = { survivor: 0, hunter: 0 };
+let selectedCustomBan = { survivor: [], hunter: [] };
 
 
 function startCustomGlobalBan() {
@@ -268,7 +270,7 @@ function startCustomGlobalBan() {
     survivor: (currentSet - 1) * 3,
     hunter: (currentSet - 1) * 1
   };
-  selectedCustomBan = {survivor: [], hunter: []};
+  selectedCustomBan = { survivor: [], hunter: [] };
 
   updateCustomGlobalLabels();
   renderCustomBanCards("survivor");
@@ -277,28 +279,28 @@ function startCustomGlobalBan() {
 }
 
 // 커스텀 글로벌 밴 단계 카드 렌더링
-function renderCustomBanCards(target){
-  const container = document.getElementById(target==="survivor"?"customBanSurvivors":"customBanHunters");
+function renderCustomBanCards(target) {
+  const container = document.getElementById(target === "survivor" ? "customBanSurvivors" : "customBanHunters");
   container.innerHTML = "";
-  const pool = target==="survivor"?survivors:hunters;
+  const pool = target === "survivor" ? survivors : hunters;
 
-  pool.forEach(c=>{
+  pool.forEach(c => {
     let div = document.createElement("div");
     div.className = "card";
     div.innerHTML = `<img src="${c.img}"><span>${c.name}</span>`;
 
     // 🔹 특정 이름 카드에만 클래스 추가
-    if(c.name === "바이올리니스트"){
-        div.querySelector("span").classList.add("long-name");
+    if (c.name === "바이올리니스트") {
+      div.querySelector("span").classList.add("long-name");
     }
 
-    div.onclick = ()=>{
-      if(selectedCustomBan[target].includes(c.name)){
+    div.onclick = () => {
+      if (selectedCustomBan[target].includes(c.name)) {
         // 선택 해제
-        selectedCustomBan[target] = selectedCustomBan[target].filter(x=>x!==c.name);
+        selectedCustomBan[target] = selectedCustomBan[target].filter(x => x !== c.name);
         div.classList.remove("selected");
       } else {
-        if(selectedCustomBan[target].length >= customBanTargets[target]) return;
+        if (selectedCustomBan[target].length >= customBanTargets[target]) return;
         selectedCustomBan[target].push(c.name);
         div.classList.add("selected");
       }
@@ -311,17 +313,17 @@ function renderCustomBanCards(target){
 
 function updateSetMapInfo() {
   const infoDiv = document.getElementById("setMapInfo");
-  if (currentSet && currentMap) {
-    infoDiv.innerText = `세트: ${currentSet} | 맵: ${mapNames[currentMap]}`;
+  if (playerRole && currentSet && currentMap) {
+    infoDiv.innerText = `선택 진영: ${playerRole} | 세트: ${currentSet} | 맵: ${mapNames[currentMap]}`;
   } else {
     infoDiv.innerText = "";
   }
 }
 
 
-function updateCustomBanButton(){
+function updateCustomBanButton() {
   const ok = (selectedCustomBan.survivor.length === customBanTargets.survivor &&
-              selectedCustomBan.hunter.length === customBanTargets.hunter);
+    selectedCustomBan.hunter.length === customBanTargets.hunter);
   document.getElementById("confirmCustomBanBtn").disabled = !ok;
 }
 
@@ -336,25 +338,25 @@ function confirmCustomBan() {
   startTurn();
 }
 
-function startTurn(){
+function startTurn() {
   clearInterval(timerId);
   selectedThisTurn = [];
   document.getElementById("finishTurnBtn").disabled = true;
 
   let flow = setFlows[currentSet];
-  if(currentTurn >= flow.length){
+  if (currentTurn >= flow.length) {
     showEndOptions();
     return;
   }
 
   let turn = flow[currentTurn];
-  document.getElementById("turnInfo").innerText = `[${turn.side}] ${turn.target} ${turn.action} ${turn.count>0?turn.count+"개":""}`;
+  document.getElementById("turnInfo").innerText = `[${turn.side}] ${turn.target} ${turn.action} ${turn.count > 0 ? turn.count + "개" : ""}`;
   renderCards(turn.target, turn.count);
   startTimer(turn.time);
 }
 
 // 카드 렌더링 함수 (trait ready 포함)
-function renderCards(target, maxCount){
+function renderCards(target, maxCount) {
   const listDiv = document.getElementById("cardList");
   listDiv.innerHTML = "";
 
@@ -362,15 +364,15 @@ function renderCards(target, maxCount){
   const isTraitTurn = turn.action === "ready";
   const finishBtn = document.getElementById("finishTurnBtn");
 
-  if(isTraitTurn){
-    listDiv.style.display = "none"; 
-    finishBtn.disabled = false; 
+  if (isTraitTurn) {
+    listDiv.style.display = "none";
+    finishBtn.disabled = false;
     return;
   } else {
-    listDiv.style.display = "flex"; 
+    listDiv.style.display = "flex";
   }
 
-  const pool = target==="survivor"?survivors:hunters;
+  const pool = target === "survivor" ? survivors : hunters;
 
   pool.forEach(c => {
     let container = document.createElement("div");
@@ -381,118 +383,117 @@ function renderCards(target, maxCount){
     div.innerHTML = `<img src="${c.img}"><span>${c.name}</span>`;
 
     // 🔹 특정 이름 카드에만 클래스 추가
-    if(c.name === "바이올리니스트"){
-        div.querySelector("span").classList.add("long-name");
+    if (c.name === "바이올리니스트") {
+      div.querySelector("span").classList.add("long-name");
     }
 
-    const isGlobalBanned = (target==="survivor" && bannedSurvivors.includes(c.name)) ||
-                           (target==="hunter" && bannedHunters.includes(c.name));
-    const isPickedThisSet = (target==="survivor" && currentSetPicked.survivor.includes(c.name)) ||
-                            (target==="hunter" && currentSetPicked.hunter.includes(c.name));
-    const isBannedThisSet = (target==="survivor" && currentSetPicked.bannedSurvivor.includes(c.name)) ||
-                             (target==="hunter" && currentSetPicked.bannedHunter.includes(c.name));
+    const isGlobalBanned = (target === "survivor" && bannedSurvivors.includes(c.name)) ||
+      (target === "hunter" && bannedHunters.includes(c.name));
+    const isPickedThisSet = (target === "survivor" && currentSetPicked.survivor.includes(c.name)) ||
+      (target === "hunter" && currentSetPicked.hunter.includes(c.name));
+    const isBannedThisSet = (target === "survivor" && currentSetPicked.bannedSurvivor.includes(c.name)) ||
+      (target === "hunter" && currentSetPicked.bannedHunter.includes(c.name));
 
-if(isGlobalBanned) {
-  div.classList.add("globalBanned");
-} 
-else if(isBannedThisSet) {
-  div.classList.add("banned");
-
-  // 붉은 X 표시 span 추가
-  const banMark = document.createElement("span");
-  banMark.className = "card-ban";
-  banMark.textContent = "✖";   // X 문자
-  div.appendChild(banMark);
-} 
-else if(isPickedThisSet) {
-  div.classList.add("picked");
-} 
-else {
-  div.onclick = () => {
-    if(div.classList.contains("selected")){
-      div.classList.remove("selected");
-      selectedThisTurn = selectedThisTurn.filter(x => x !== c);
-    } else {
-      if(selectedThisTurn.length >= maxCount && maxCount!==0) return;
-      div.classList.add("selected");
-      selectedThisTurn.push(c);
+    if (isGlobalBanned) {
+      div.classList.add("globalBanned");
     }
-    finishBtn.disabled = selectedThisTurn.length !== maxCount;
-  };
-}
+    else if (isBannedThisSet) {
+      div.classList.add("banned");
 
+      // 붉은 X 표시 span 추가
+      const banMark = document.createElement("span");
+      banMark.className = "card-ban";
+      banMark.textContent = "✖";   // X 문자
+      div.appendChild(banMark);
+    }
+    else if (isPickedThisSet) {
+      div.classList.add("picked");
+    }
+    else {
+      div.onclick = () => {
+        if (div.classList.contains("selected")) {
+          div.classList.remove("selected");
+          selectedThisTurn = selectedThisTurn.filter(x => x !== c);
+        } else {
+          if (selectedThisTurn.length >= maxCount && maxCount !== 0) return;
+          div.classList.add("selected");
+          selectedThisTurn.push(c);
+        }
+        finishBtn.disabled = selectedThisTurn.length !== maxCount;
+      };
+    }
 
     container.appendChild(div);
     listDiv.appendChild(container);
   });
 }
 
-function startTimer(seconds){
+function startTimer(seconds) {
   timeLeft = seconds;
   updateTimerDisplay();
   clearInterval(timerId);
-  timerId = setInterval(()=>{
+  timerId = setInterval(() => {
     timeLeft--;
     updateTimerDisplay();
-    if(timeLeft<=0){
+    if (timeLeft <= 0) {
       clearInterval(timerId);
       finishTurn([]);
     }
-  },1000);
+  }, 1000);
 }
 
-function updateTimerDisplay(){
+function updateTimerDisplay() {
   let turn = setFlows[currentSet][currentTurn];
   document.getElementById("turnInfo").innerText =
-    `[${roleDisplay[turn.side]}] ${roleDisplay[turn.target] || turn.target} ${turn.action} ${turn.count>0 ? turn.count+"개" : ""} | 남은 시간: ${timeLeft}초`;
+    `[${roleDisplay[turn.side]}] ${roleDisplay[turn.target] || turn.target} ${turn.action} ${turn.count > 0 ? turn.count + "개" : ""} | 남은 시간: ${timeLeft}초`;
 }
 
-function finishTurn(selectedChars){
+function finishTurn(selectedChars) {
   clearInterval(timerId);
-  if(!selectedChars || selectedChars.length===0) selectedChars = selectedThisTurn;
+  if (!selectedChars || selectedChars.length === 0) selectedChars = selectedThisTurn;
   let turn = setFlows[currentSet][currentTurn];
 
   // 출력 텍스트 처리 부분 수정
   let displayText;
-  if(selectedChars.length > 0){
-    displayText = selectedChars.map(c=>c.name).join(", ");
+  if (selectedChars.length > 0) {
+    displayText = selectedChars.map(c => c.name).join(", ");
   } else {
-    if(turn.action === "ready"){
+    if (turn.action === "ready") {
       displayText = "설정 완료";   // trait ready일 경우
     } else {
       displayText = "(선택 없음)"; // 나머지는 기존 유지
     }
   }
 
-document.getElementById("log").innerHTML +=
-  `<div>[${roleDisplay[turn.side]}] ${turn.action} → ${displayText}</div>`;
+  document.getElementById("log").innerHTML +=
+    `<div>[${roleDisplay[turn.side]}] ${turn.action} → ${displayText}</div>`;
 
 
 
   // 현재 세트에 반영
-if(turn.side==="survivor" && turn.action==="pick") {
-  currentSetPicked.survivor.push(...selectedChars.map(c=>c.name));
-  finalSurvivors.push(...selectedChars);
+  if (turn.side === "survivor" && turn.action === "pick") {
+    currentSetPicked.survivor.push(...selectedChars.map(c => c.name));
+    finalSurvivors.push(...selectedChars);
 
-  // 현재 라인업 영역 표시
-  document.getElementById("currentLineup").classList.remove("hidden");
+    // 현재 라인업 영역 표시
+    document.getElementById("currentLineup").classList.remove("hidden");
 
-  updateCurrentLineup(); // ✅ 현재 라인업 갱신
-}
-  if(turn.side==="hunter" && turn.action==="pick") currentSetPicked.hunter.push(...selectedChars.map(c=>c.name));
+    updateCurrentLineup(); // ✅ 현재 라인업 갱신
+  }
+  if (turn.side === "hunter" && turn.action === "pick") currentSetPicked.hunter.push(...selectedChars.map(c => c.name));
 
-  if(turn.side==="hunter" && turn.action==="ban") currentSetPicked.bannedSurvivor.push(...selectedChars.map(c=>c.name));
-  if(turn.side==="survivor" && turn.action==="ban") currentSetPicked.bannedHunter.push(...selectedChars.map(c=>c.name));
+  if (turn.side === "hunter" && turn.action === "ban") currentSetPicked.bannedSurvivor.push(...selectedChars.map(c => c.name));
+  if (turn.side === "survivor" && turn.action === "ban") currentSetPicked.bannedHunter.push(...selectedChars.map(c => c.name));
 
   // 최종 저장
-  if(turn.side === "hunter" && turn.action === "pick") finalHunter = selectedChars[0];
+  if (turn.side === "hunter" && turn.action === "pick") finalHunter = selectedChars[0];
 
-currentTurn++;
-  if(currentTurn >= setFlows[currentSet].length){
+  currentTurn++;
+  if (currentTurn >= setFlows[currentSet].length) {
     // 글로벌 밴 적용
-    if(globalBan){
-      bannedSurvivors.push(...currentSetPicked.survivor.slice(0,3).filter(c=>!bannedSurvivors.includes(c)));
-      bannedHunters.push(...currentSetPicked.hunter.filter(c=>!bannedHunters.includes(c)));
+    if (globalBan) {
+      bannedSurvivors.push(...currentSetPicked.survivor.slice(0, 3).filter(c => !bannedSurvivors.includes(c)));
+      bannedHunters.push(...currentSetPicked.hunter.filter(c => !bannedHunters.includes(c)));
     }
     // 세트 끝났을 때 최종 라인업 화면을 먼저 보여줍니다
     showFinalLineup();
@@ -503,13 +504,13 @@ currentTurn++;
 
 
 
-function showFinalLineup(){
+function showFinalLineup() {
   // 카드 선택 화면 숨기기
   document.getElementById("draftPhase").classList.add("hidden");
 
   // 기존 finalLineupContainer 제거 (중복 방지)
   const existing = document.querySelector('.finalLineupContainer');
-  if(existing) existing.remove();
+  if (existing) existing.remove();
 
   // 로그에 히스토리 추가
   const logDiv = document.getElementById("log");
@@ -526,7 +527,7 @@ function showFinalLineup(){
 
 
   // 생존자 4명
-  finalSurvivors.slice(0,4).forEach(c => {
+  finalSurvivors.slice(0, 4).forEach(c => {
     let div = document.createElement("div");
     div.className = "card";
     div.innerHTML = `<img src="${c.img}"><span>${c.name}</span>`;
@@ -539,7 +540,7 @@ function showFinalLineup(){
   lineupDiv.appendChild(spacer);
 
   // 감시자
-  if(finalHunter){
+  if (finalHunter) {
     let div = document.createElement("div");
     div.className = "card";
     div.innerHTML = `<img src="${finalHunter.img}"><span>${finalHunter.name}</span>`;
@@ -556,11 +557,11 @@ function showFinalLineup(){
 }
 
 
-function showEndOptions(){
+function showEndOptions() {
   const endDiv = document.getElementById("endOptions");
   endDiv.classList.remove("hidden");
 
-  if(globalBan){
+  if (globalBan) {
     // ON이면 두 버튼 활성
     document.getElementById("nextSetBtn").style.display = "inline-block";
     document.getElementById("endMatchBtn").style.display = "inline-block";
@@ -571,10 +572,10 @@ function showEndOptions(){
   }
 }
 
-function endMatch(){
+function endMatch() {
   // 최종 라인업 제거 ⭐
   const existing = document.getElementById("finalLineupContainer");
-  if(existing) existing.remove();
+  if (existing) existing.remove();
 
   // 초기화
   bannedSurvivors = [];
@@ -586,7 +587,7 @@ function endMatch(){
   selectedThisTurn = [];
   finalSurvivors = [];
   finalHunter = null;
-  currentSetPicked = {survivor:[], hunter:[], bannedSurvivor:[], bannedHunter:[]};
+  currentSetPicked = { survivor: [], hunter: [], bannedSurvivor: [], bannedHunter: [] };
 
   document.getElementById("endOptions").classList.add("hidden");
   document.getElementById("log").innerHTML = "";
@@ -606,25 +607,25 @@ function nextSet() {
   const existing = document.getElementById("finalLineupContainer");
   if (existing) existing.remove();
 
-  if(globalBan) customBanDone = true; // 글로벌밴 on → 1세트 이후 커스텀 밴 절대 호출 안함
+  if (globalBan) customBanDone = true; // 글로벌밴 on → 1세트 이후 커스텀 밴 절대 호출 안함
   else customBanDone = false;         // 글로벌밴 off → 이후 세트는 커스텀 밴 필요
 
   // 이전 세트에서 선택한 맵 기록
-  if(globalBan) bannedMaps.push(currentMap);
+  if (globalBan) bannedMaps.push(currentMap);
 
   currentSet++;
   currentTurn = 0;
   selectedThisTurn = [];
   finalSurvivors = [];
   finalHunter = null;
-  currentSetPicked = {survivor: [], hunter: [], bannedSurvivor: [], bannedHunter: []};
+  currentSetPicked = { survivor: [], hunter: [], bannedSurvivor: [], bannedHunter: [] };
 
   document.getElementById("endOptions").classList.add("hidden");
   document.getElementById("draftPhase").classList.add("hidden");
   document.getElementById("log").innerHTML = "";
 
   // 5세트 이상이면 [다음 세트 진행] 버튼 비활성화
-  if(currentSet > 5){
+  if (currentSet > 5) {
     document.getElementById("nextSetBtn").style.display = "none";
   } else {
     document.getElementById("mapSelect").classList.remove("hidden");
@@ -632,5 +633,5 @@ function nextSet() {
   }
 
   const currentLineupDiv = document.getElementById("currentSurvivors");
-  if(currentLineupDiv) currentLineupDiv.innerHTML = "";
+  if (currentLineupDiv) currentLineupDiv.innerHTML = "";
 }
