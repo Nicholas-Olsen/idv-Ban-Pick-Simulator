@@ -487,16 +487,43 @@ if(turn.side==="survivor" && turn.action==="pick") {
   // 최종 저장
   if(turn.side === "hunter" && turn.action === "pick") finalHunter = selectedChars[0];
 
-  currentTurn++;
+currentTurn++;
   if(currentTurn >= setFlows[currentSet].length){
     // 글로벌 밴 적용
     if(globalBan){
       bannedSurvivors.push(...currentSetPicked.survivor.slice(0,3).filter(c=>!bannedSurvivors.includes(c)));
-      bannedHunters.push(...selectedCustomBan.hunter.filter(c => !bannedHunters.includes(c)));
+      bannedHunters.push(...currentSetPicked.hunter.filter(c=>!bannedHunters.includes(c)));
     }
+    // 세트 끝났을 때 최종 라인업 화면을 먼저 보여줍니다
+    showFinalLineup();
+  } else {
+    startTurn();
+  }
+}
+
+
+
+function showFinalLineup(){
+  // 카드 선택 화면 숨기기
+  document.getElementById("draftPhase").classList.add("hidden");
+
+  // 기존 finalLineupContainer 제거 (중복 방지)
+  const existing = document.querySelector('.finalLineupContainer');
+  if(existing) existing.remove();
+
+  // 로그에 히스토리 추가
+  const logDiv = document.getElementById("log");
+  logDiv.innerHTML += `<h2>밴픽 히스토리</h2>`;
+
+  // 최종 라인업 컨테이너 생성
+  const container = document.createElement("div");
+  container.className = "finalLineupContainer";
+  container.id = "finalLineupContainer";  // ⭐ id 부여
+  container.innerHTML = "<h2>최종 라인업</h2>";
 
   const lineupDiv = document.createElement("div");
   lineupDiv.className = "finalLineup";
+
 
   // 생존자 4명
   finalSurvivors.slice(0,4).forEach(c => {
