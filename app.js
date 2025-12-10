@@ -127,24 +127,24 @@ let setFlows = {};
 
 for (let i = 1; i <= 5; i++) {
   setFlows[i] = [
-    { side: "hunter", action: "ban", target: "survivor", count: 2, time: 120 }, // 기존 유지
+    { side: "hunter", action: "ban", target: "survivor", count: 2, time: 40 }, // 기존 유지
   ];
 
   // 새로 추가되는 부분
   if (i === 2) {
-    setFlows[i].push({ side: "survivor", action: "ban", target: "hunter", count: 1, time: 60 }); // 2세트: 1개, 60초
+    setFlows[i].push({ side: "survivor", action: "ban", target: "hunter", count: 1, time: 40 }); // 2세트: 1개, 60초
   } else if (i >= 3) {
-    setFlows[i].push({ side: "survivor", action: "ban", target: "hunter", count: 2, time: 60 }); // 3~5세트: 2개, 60초
+    setFlows[i].push({ side: "survivor", action: "ban", target: "hunter", count: 2, time: 40 }); // 3~5세트: 2개, 60초
   }
 
   setFlows[i].push(
-    { side: "survivor", action: "pick", target: "survivor", count: 2, time: 120 }, // 기존 유지
-    { side: "hunter", action: "ban", target: "survivor", count: 1, time: 60 },
-    { side: "survivor", action: "pick", target: "survivor", count: 1, time: 60 },
-    { side: "hunter", action: "ban", target: "survivor", count: 1, time: 60 },
-    { side: "survivor", action: "pick", target: "survivor", count: 1, time: 60 },
-    { side: "survivor", action: "ready", target: "trait", count: 0, time: 120 },
-    { side: "hunter", action: "pick", target: "hunter", count: 1, time: 120 }
+    { side: "survivor", action: "pick", target: "survivor", count: 2, time: 40 }, // 기존 유지
+    { side: "hunter", action: "ban", target: "survivor", count: 1, time: 20 },
+    { side: "survivor", action: "pick", target: "survivor", count: 1, time: 20 },
+    { side: "hunter", action: "ban", target: "survivor", count: 1, time: 20 },
+    { side: "survivor", action: "pick", target: "survivor", count: 1, time: 50 },
+    { side: "survivor", action: "ready", target: "trait", count: 0, time: 60 },
+    { side: "hunter", action: "pick", target: "hunter", count: 1, time: 30 }
   );
 }
 
