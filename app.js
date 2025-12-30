@@ -120,6 +120,7 @@ let hunters = [
   { name: "'훌라발루'", img: "./images/h31.jpg" },
   { name: "잡화상", img: "./images/h32.jpg" },
   { name: "'당구 선수'", img: "./images/h33.jpg" },
+  { name: "'여왕벌'", img: "./images/h34.jpg" }
 ];
 
 // 세트별 밴픽 순서 (1세트 예시)
