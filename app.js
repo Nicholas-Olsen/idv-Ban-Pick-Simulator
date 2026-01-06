@@ -247,7 +247,7 @@ function goToDraftPhase() {
 
 
 function updateCustomGlobalLabels() {
-  let survivorCount = (currentSet - 1) * 3;
+  let survivorCount = (currentSet - 1) * 4;
   let hunterCount = (currentSet - 1) * 1;
 
   document.getElementById("survivorLabel").innerText = `생존자 : ${survivorCount}개`;
@@ -256,7 +256,7 @@ function updateCustomGlobalLabels() {
 
 
 
-let survivorCount = (currentSet - 1) * 3;
+let survivorCount = (currentSet - 1) * 4;
 let hunterCount = (currentSet - 1) * 1;
 
 let customBanTargets = { survivor: 0, hunter: 0 };
@@ -268,7 +268,7 @@ function startCustomGlobalBan() {
 
   // 세트별 필요 수량 계산
   customBanTargets = {
-    survivor: (currentSet - 1) * 3,
+    survivor: (currentSet - 1) * 4,
     hunter: (currentSet - 1) * 1
   };
   selectedCustomBan = { survivor: [], hunter: [] };
@@ -493,7 +493,7 @@ function finishTurn(selectedChars) {
   if (currentTurn >= setFlows[currentSet].length) {
     // 글로벌 밴 적용
     if (globalBan) {
-      bannedSurvivors.push(...currentSetPicked.survivor.slice(0, 3).filter(c => !bannedSurvivors.includes(c)));
+      bannedSurvivors.push(...currentSetPicked.survivor.slice(0, 4).filter(c => !bannedSurvivors.includes(c)));
       bannedHunters.push(...currentSetPicked.hunter.filter(c => !bannedHunters.includes(c)));
     }
     // 세트 끝났을 때 최종 라인업 화면을 먼저 보여줍니다
