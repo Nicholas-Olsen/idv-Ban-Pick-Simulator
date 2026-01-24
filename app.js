@@ -81,8 +81,9 @@ let survivors = [
   { name: "기상학자", img: "./images/s46.jpg" },
   { name: "궁수", img: "./images/s47.jpg" },
   { name: "'탈출 마스터'", img: "./images/s48.jpg" },
-  { name: "환등사", img: "./images/s50.jpg" },
-  { name: "행운아", img: "./images/s49.jpg" },
+  { name: "환등사", img: "./images/s49.jpg" },
+  { name: "투우사", img: "./images/s50.jpg" },
+  { name: "행운아", img: "./images/s51.jpg" },
 ];
 
 
