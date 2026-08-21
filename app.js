@@ -295,7 +295,7 @@ function renderCustomBanCards(target) {
     div.innerHTML = `<img src="${c.img}"><span>${c.name}</span>`;
 
     // 🔹 특정 이름 카드에만 클래스 추가
-    if (c.name === "바이올리니스트") {
+    if (c.name === "바이올리니스트"||c.name === "무언극 아티스트") {
       div.querySelector("span").classList.add("long-name");
     }
 
